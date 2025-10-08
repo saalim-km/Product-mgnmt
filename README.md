@@ -1,76 +1,38 @@
-# NestJS + PostgreSQL Backend — Products, Orders, and Top Products Report
+# Simple Backend: Products, Orders, and Top Products Report
 
-A small NestJS service backed by PostgreSQL to manage Products and Orders and provide a “top products” report.
+A small backend that lets you:
+- Add and list products
+- Add and list orders
+- See a “top products” report by total quantity sold
 
-- Tech: NestJS, TypeScript, PostgreSQL
-- Endpoints:
-  - Products: create, list
-  - Orders: create, list
-  - Reports: top products by total quantity sold (with optional limit)
+Use this to quickly test product/order flows and get a basic sales ranking.
 
-## Table of Contents
+## Contents
 - Overview
 - Requirements
-- Environment Variables
-- Quick Start
-- Running with Docker (optional)
-- API Reference
+- Setup
+- Environment variables
+- Run the app
+- API reference
   - Products
   - Orders
   - Reports
-- Sample Workflow
-- Error Responses
-- Data Model
-- Notes & Future Improvements
-
----
+- Sample workflow
+- Common errors
+- Data model
+- Postman collection
+- Next steps
 
 ## Overview
-This service implements:
-- Product entity: id, name, price
-- Order entity: id, productId (FK → Product), quantity
-- REST endpoints for creating/listing products and orders
-- Report endpoint for top products by totalSold (sum of quantities)
-
----
+This service stores products and orders in a PostgreSQL database and provides a report that totals quantities sold per product. It’s built for quick testing and simple demos.
 
 ## Requirements
-- Node.js LTS (v18+ recommended)
+- Node.js 18+
 - npm or yarn
 - PostgreSQL 13+ (local or remote)
-- Optional: Docker to run PostgreSQL locally
+- Optional: Docker (if you want to run PostgreSQL locally)
 
----
-
-## Environment Variables
-
-Use the following variables (e.g., in a `.env` file):
-
-Your example (as requested):
-\`\`\`
-POSTGRES_HOST=localhostPOSTGRES_PORT=5432POSTGRES_USER=<username>POSTGRES_PASSWORD=<password>POSTGRES_DB=<db-name>
-\`\`\`
-
-Typical .env layout (copy/paste friendly):
-\`\`\`
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=<username>
-POSTGRES_PASSWORD=<password>
-POSTGRES_DB=<db-name>
-# Optional app settings:
-# PORT=3000
-# NODE_ENV=development
-\`\`\`
-
-Tips:
-- Ensure the database exists and the user has permissions.
-- If using a connection string approach, you can expose it as DATABASE_URL (if your project supports it).
-
----
-
-## Quick Start
-
+## Setup
 1) Install dependencies
 \`\`\`bash
 npm install
@@ -78,67 +40,56 @@ npm install
 yarn
 \`\`\`
 
-2) Configure environment
-- Create a `.env` file with the variables above.
+2) Create the database in PostgreSQL (match the name you set in your env vars).
 
-3) Ensure PostgreSQL is running
-- Create the database named in `POSTGRES_DB`.
-- If the app uses TypeORM sync/migrations, ensure they run on startup (or run migrations manually if provided).
+3) Add environment variables (see below).
 
-4) Run the server
-\`\`\`bash
-# Development (watch mode)
-npm run start:dev
-
-# Production
-npm run build
-npm run start
-\`\`\`
-
-5) Health check
-- Use the curl examples below to interact with the API at `http://localhost:3000` (or your configured PORT).
-
----
-
-## Running with Docker (optional)
-
-Start PostgreSQL locally:
-\`\`\`bash
-docker run --name nest-pg \
-  -e POSTGRES_USER=<username> \
-  -e POSTGRES_PASSWORD=<password> \
-  -e POSTGRES_DB=<db-name> \
-  -p 5432:5432 -d postgres:15
-\`\`\`
-
-Set your `.env` accordingly:
-\`\`\`
+## Environment variables
+Create a `.env` file in the project root:
+\`\`\`env
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_USER=<username>
 POSTGRES_PASSWORD=<password>
 POSTGRES_DB=<db-name>
+
+# Optional:
+# PORT=3000
+# NODE_ENV=development
 \`\`\`
 
----
+Tips:
+- Make sure the database exists and the user has access.
+- If you prefer a single connection string, use `DATABASE_URL` if your setup supports it.
 
-## API Reference
+## Run the app
+Development (watch mode):
+\`\`\`bash
+npm run start:dev
+\`\`\`
+
+Production:
+\`\`\`bash
+npm run build
+npm run start
+\`\`\`
 
 Base URL: `http://localhost:3000`  
-Content-Type: `application/json`
+All endpoints use `application/json`.
+
+## API reference
 
 ### Products
-
-1) Create Product
-- Endpoint: `POST /products`
-- Request Body:
+1) Create product  
+POST `/products`  
+Request:
 \`\`\`json
 {
   "name": "Widget",
   "price": 19.99
 }
 \`\`\`
-- Response: `201 Created`
+Response (201):
 \`\`\`json
 {
   "id": 1,
@@ -146,41 +97,28 @@ Content-Type: `application/json`
   "price": 19.99
 }
 \`\`\`
-- curl:
-\`\`\`bash
-curl -X POST http://localhost:3000/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Widget","price":19.99}'
-\`\`\`
 
-2) List Products
-- Endpoint: `GET /products`
-- Response: `200 OK`
+2) List products  
+GET `/products`  
+Response (200):
 \`\`\`json
 [
   { "id": 1, "name": "Widget", "price": 19.99 },
   { "id": 2, "name": "Gadget", "price": 29.5 }
 ]
 \`\`\`
-- curl:
-\`\`\`bash
-curl http://localhost:3000/products
-\`\`\`
-
----
 
 ### Orders
-
-1) Create Order
-- Endpoint: `POST /orders`
-- Request Body:
+1) Create order  
+POST `/orders`  
+Request:
 \`\`\`json
 {
   "productId": 1,
   "quantity": 3
 }
 \`\`\`
-- Response: `201 Created`
+Response (201):
 \`\`\`json
 {
   "id": 1,
@@ -188,57 +126,30 @@ curl http://localhost:3000/products
   "quantity": 3
 }
 \`\`\`
-- curl:
-\`\`\`bash
-curl -X POST http://localhost:3000/orders \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"quantity":3}'
-\`\`\`
 
-2) List Orders
-- Endpoint: `GET /orders`
-- Response: `200 OK`
+2) List orders  
+GET `/orders`  
+Response (200):
 \`\`\`json
 [
   { "id": 1, "productId": 1, "quantity": 3 },
   { "id": 2, "productId": 2, "quantity": 5 }
 ]
 \`\`\`
-- curl:
-\`\`\`bash
-curl http://localhost:3000/orders
-\`\`\`
-
----
 
 ### Reports
-
-Top Products Report
-- Endpoint: `GET /reports/top-products?limit=N`
-- Query Params:
-  - `limit` (number, optional; default `5`)
-- Description: Sums `quantity` by `productId`, joins `name`, sorts by `totalSold` descending, and limits the result.
-- Response: `200 OK`
+Top products  
+GET `/reports/top-products?limit=N` (default `limit=5`)  
+Response (200):
 \`\`\`json
 [
   { "productId": 1, "name": "Widget", "totalSold": 8 },
   { "productId": 2, "name": "Gadget", "totalSold": 4 }
 ]
 \`\`\`
-- curl (default limit=5):
-\`\`\`bash
-curl "http://localhost:3000/reports/top-products"
-\`\`\`
-- curl (custom limit=2):
-\`\`\`bash
-curl "http://localhost:3000/reports/top-products?limit=2"
-\`\`\`
 
----
-
-## Sample Workflow
-
-1) Create products
+## Sample workflow
+1) Create two products:
 \`\`\`bash
 curl -X POST http://localhost:3000/products \
   -H "Content-Type: application/json" \
@@ -249,14 +160,12 @@ curl -X POST http://localhost:3000/products \
   -d '{"name":"Gadget","price":29.5}'
 \`\`\`
 
-2) Create orders
+2) Create some orders:
 \`\`\`bash
-# Widget x5
 curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -d '{"productId":1,"quantity":5}'
 
-# Gadget x3 and x1
 curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -d '{"productId":2,"quantity":3}'
@@ -266,65 +175,34 @@ curl -X POST http://localhost:3000/orders \
   -d '{"productId":2,"quantity":1}'
 \`\`\`
 
-3) Get top products (limit 2)
+3) Get the top products report (example with limit=2):
 \`\`\`bash
 curl "http://localhost:3000/reports/top-products?limit=2"
 \`\`\`
-Sample response:
-\`\`\`json
-[
-  { "productId": 1, "name": "Widget", "totalSold": 5 },
-  { "productId": 2, "name": "Gadget", "totalSold": 4 }
-]
-\`\`\`
 
----
+## Common errors
+- 400 Bad Request: invalid types or body format
+- 404 Not Found: product does not exist when creating an order
+- 409 Conflict: duplicate product name (if uniqueness is enforced)
+- 500 Internal Server Error: database or unexpected errors
 
-## Error Responses
-
-- 400 Bad Request
-  - Invalid body or types (e.g., non-numeric price/quantity)
-  \`\`\`json
-  { "statusCode": 400, "message": "Validation failed", "error": "Bad Request" }
-  \`\`\`
-
-- 404 Not Found
-  - Creating an order for a `productId` that does not exist
-  \`\`\`json
-  { "statusCode": 404, "message": "Product not found" }
-  \`\`\`
-
-- 409 Conflict
-  - Duplicate product name (if uniqueness is enforced)
-  \`\`\`json
-  { "statusCode": 409, "message": "Product name already exists" }
-  \`\`\`
-
-- 500 Internal Server Error
-  - Database connectivity or unexpected errors
-  \`\`\`json
-  { "statusCode": 500, "message": "Internal server error" }
-  \`\`\`
-
----
-
-## Data Model
-
+## Data model
 - Product
-  - `id`: number (primary key)
+  - `id`: number
   - `name`: string
-  - `price`: number (decimal)
-
+  - `price`: number
 - Order
-  - `id`: number (primary key)
-  - `productId`: number (foreign key → Product)
-  - `quantity`: number (integer)
+  - `id`: number
+  - `productId`: number (references Product)
+  - `quantity`: number
 
----
+## Postman collection
+Use the shared Postman collection to try the endpoints quickly:
+- https://develepors.postman.co/workspace/develepors-Workspace~0ff4a7a1-acbf-4377-8a53-f2a91fe2566e/collection/42617517-beba4d29-52aa-4d97-9ea5-8993668ad2bf?action=share&creator=42617517
 
-## Notes & Future Improvements
-- DTO validation with `class-validator` and `class-transformer`.
-- Migrations and seed scripts; disable auto-sync in production.
-- Pagination for list endpoints.
-- Unit tests for services and E2E tests for controllers.
-- Authentication/authorization if needed.
+## Next steps
+- Add request validation (e.g., name required, price/quantity positive)
+- Add pagination on list endpoints
+- Add migrations/seed scripts
+- Add tests (unit and e2e)
+- Add authentication if needed
