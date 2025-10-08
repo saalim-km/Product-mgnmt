@@ -46,6 +46,7 @@ yarn
 
 ## Environment variables
 Create a `.env` file in the project root:
+
 \`\`\`env
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
@@ -58,9 +59,15 @@ POSTGRES_DB=<db-name>
 # NODE_ENV=development
 \`\`\`
 
-Tips:
-- Make sure the database exists and the user has access.
-- If you prefer a single connection string, use `DATABASE_URL` if your setup supports it.
+Alternative (single connection string):
+\`\`\`env
+# Example format; replace values with your own
+DATABASE_URL=postgres://<username>:<password>@localhost:5432/<db-name>
+\`\`\`
+
+Notes:
+- Make sure the database exists and the user has permission to access it.
+- Use either the individual variables or `DATABASE_URL`, based on how your app is configured.
 
 ## Run the app
 Development (watch mode):
@@ -197,7 +204,10 @@ curl "http://localhost:3000/reports/top-products?limit=2"
   - `quantity`: number
 
 ## Postman collection
-Use the shared Postman collection to try the endpoints quickly:
+Quick start with Postman:
+- Open Postman → Import → Paste the URL below → Import
+
+Collection link:
 - https://develepors.postman.co/workspace/develepors-Workspace~0ff4a7a1-acbf-4377-8a53-f2a91fe2566e/collection/42617517-beba4d29-52aa-4d97-9ea5-8993668ad2bf?action=share&creator=42617517
 
 ## Next steps
