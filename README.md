@@ -1,4 +1,4 @@
-Simple Backend: Products, Orders, Top Products
+# Simple Backend: Products, Orders, Top Products
 
 What is this?
 
@@ -48,14 +48,7 @@ POSTGRES_USER=<username>
 POSTGRES_PASSWORD=<password>
 POSTGRES_DB=<db-name>
 
-# Optional:
-# PORT=3000
-# NODE_ENV=development
-```
-
 Option B: Single connection string
-
-```plaintext
 DATABASE_URL=postgres://<username>:<password>@localhost:5432/<db-name>
 ```
 
@@ -83,9 +76,9 @@ Base URL: [http://localhost:3000](http://localhost:3000)All endpoints use applic
 
 API (quick reference)
 
-Products
+# Products
 
-- Create product
+Create product
 
 - POST /products
 - Body:
@@ -98,17 +91,30 @@ Products
 
 
 
-- List products
+List products
 
 - GET /products
+```json
+[
+    {
+        "id": 1,
+        "name": "Product A",
+        "price": 120.5
+    },
+    {
+        "id": 2,
+        "name": "Product B",
+        "price": 80
+    }
+]
+```
 
 
 
 
+# Orders
 
-Orders
-
-- Create order
+Create order
 
 - POST /orders
 - Body:
@@ -121,15 +127,36 @@ Orders
 
 
 
-- List orders
+List orders
 
 - GET /orders
+```json
+[
+    {
+        "id": 1,
+        "quantity": 15,
+        "product": {
+            "id": 1,
+            "name": "Proudct 1",
+            "price": "1499.99"
+        }
+    },
+    {
+        "id": 2,
+        "quantity": 5,
+        "product": {
+            "id": 2,
+            "name": "Proudct 2",
+            "price": "1899.99"
+        }
+    }
+]
+```
 
 
 
 
-
-Reports
+# Reports
 
 - Top products
 
@@ -151,25 +178,25 @@ Quick try (cURL)
 Create products:
 
 ```shellscript
-curl -X POST http://localhost:3000/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Widget","price":19.99}'
+curl -X POST http://localhost:3000/products
+  "Content-Type: application/json"
+  '{"name":"Widget","price":19.99}'
 
-curl -X POST http://localhost:3000/products \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Gadget","price":29.5}'
+curl -X POST http://localhost:3000/products
+  "Content-Type: application/json"
+  '{"name":"Gadget","price":29.5}'
 ```
 
 Create orders:
 
 ```shellscript
-curl -X POST http://localhost:3000/orders \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"quantity":5}'
+curl -X POST http://localhost:3000/orders
+  "Content-Type: application/json"
+  '{"productId":1,"quantity":5}'
 
-curl -X POST http://localhost:3000/orders \
-  -H "Content-Type: application/json" \
-  -d '{"productId":2,"quantity":3}'
+curl -X POST http://localhost:3000/orders 
+  "Content-Type: application/json" 
+  '{"productId":2,"quantity":3}'
 ```
 
 Top products:
