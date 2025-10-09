@@ -1,53 +1,47 @@
-# Simple Backend: Products, Orders, and Top Products Report
+Simple Backend: Products, Orders, Top Products
 
-A small backend that lets you:
+What is this?
+
+- A tiny API to create/list products and orders
+- A report to see top products by total quantity sold
+
+
+Features
+
 - Add and list products
 - Add and list orders
-- See a “top products” report by total quantity sold
+- Get top products report
 
-Use this to quickly test product/order flows and get a basic sales ranking.
 
-## Contents
-- Overview
-- Requirements
-- Setup
-- Environment variables
-- Run the app
-- API reference
-  - Products
-  - Orders
-  - Reports
-- Sample workflow
-- Common errors
-- Data model
-- Postman collection
-- Next steps
+Requirements
 
-## Overview
-This service stores products and orders in a PostgreSQL database and provides a report that totals quantities sold per product. It’s built for quick testing and simple demos.
-
-## Requirements
 - Node.js 18+
 - npm or yarn
 - PostgreSQL 13+ (local or remote)
-- Optional: Docker (if you want to run PostgreSQL locally)
+- Optional: Docker (for local Postgres)
 
-## Setup
-1) Install dependencies
-\`\`\`bash
+
+Setup
+
+1. Install dependencies
+
+
+```shellscript
 npm install
 # or
 yarn
-\`\`\`
+```
 
-2) Create the database in PostgreSQL (match the name you set in your env vars).
+2. Create a PostgreSQL database (name it as in your env vars)
+3. Add environment variables (see below)
 
-3) Add environment variables (see below).
 
-## Environment variables
-Create a `.env` file in the project root:
+Environment variables
+Create a .env file in the project root (pick one method):
 
-\`\`\`env
+Option A: Separate fields
+
+```plaintext
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_USER=<username>
@@ -57,107 +51,106 @@ POSTGRES_DB=<db-name>
 # Optional:
 # PORT=3000
 # NODE_ENV=development
-\`\`\`
+```
 
-Alternative (single connection string):
-\`\`\`env
-# Example format; replace values with your own
+Option B: Single connection string
+
+```plaintext
 DATABASE_URL=postgres://<username>:<password>@localhost:5432/<db-name>
-\`\`\`
+```
 
 Notes:
-- Make sure the database exists and the user has permission to access it.
-- Use either the individual variables or `DATABASE_URL`, based on how your app is configured.
 
-## Run the app
+- Ensure the database exists and your user has access
+- Use either the separate fields or DATABASE_URL (not both, unless your app supports it)
+
+
+Run
 Development (watch mode):
-\`\`\`bash
+
+```shellscript
 npm run start:dev
-\`\`\`
+```
 
 Production:
-\`\`\`bash
+
+```shellscript
 npm run build
 npm run start
-\`\`\`
+```
 
-Base URL: `http://localhost:3000`  
-All endpoints use `application/json`.
+Base URL: [http://localhost:3000](http://localhost:3000)All endpoints use application/json
 
-## API reference
+API (quick reference)
 
-### Products
-1) Create product  
-POST `/products`  
-Request:
-\`\`\`json
-{
-  "name": "Widget",
-  "price": 19.99
-}
-\`\`\`
-Response (201):
-\`\`\`json
-{
-  "id": 1,
-  "name": "Widget",
-  "price": 19.99
-}
-\`\`\`
+Products
 
-2) List products  
-GET `/products`  
-Response (200):
-\`\`\`json
-[
-  { "id": 1, "name": "Widget", "price": 19.99 },
-  { "id": 2, "name": "Gadget", "price": 29.5 }
-]
-\`\`\`
+- Create product
 
-### Orders
-1) Create order  
-POST `/orders`  
-Request:
-\`\`\`json
-{
-  "productId": 1,
-  "quantity": 3
-}
-\`\`\`
-Response (201):
-\`\`\`json
-{
-  "id": 1,
-  "productId": 1,
-  "quantity": 3
-}
-\`\`\`
+- POST /products
+- Body:
 
-2) List orders  
-GET `/orders`  
-Response (200):
-\`\`\`json
-[
-  { "id": 1, "productId": 1, "quantity": 3 },
-  { "id": 2, "productId": 2, "quantity": 5 }
-]
-\`\`\`
+```json
+{ "name": "Widget", "price": 19.99 }
+```
 
-### Reports
-Top products  
-GET `/reports/top-products?limit=N` (default `limit=5`)  
-Response (200):
-\`\`\`json
-[
-  { "productId": 1, "name": "Widget", "totalSold": 8 },
-  { "productId": 2, "name": "Gadget", "totalSold": 4 }
-]
-\`\`\`
 
-## Sample workflow
-1) Create two products:
-\`\`\`bash
+
+
+
+- List products
+
+- GET /products
+
+
+
+
+
+Orders
+
+- Create order
+
+- POST /orders
+- Body:
+
+```json
+{ "productId": 1, "quantity": 3 }
+```
+
+
+
+
+
+- List orders
+
+- GET /orders
+
+
+
+
+
+Reports
+
+- Top products
+
+- GET /reports/top-products?limit=N (default 5)
+- Returns:
+
+```json
+[ { "productId": 1, "name": "Widget", "totalSold": 8 } ]
+```
+
+
+
+
+
+
+
+Quick try (cURL)
+
+Create products:
+
+```shellscript
 curl -X POST http://localhost:3000/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Widget","price":19.99}'
@@ -165,10 +158,11 @@ curl -X POST http://localhost:3000/products \
 curl -X POST http://localhost:3000/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Gadget","price":29.5}'
-\`\`\`
+```
 
-2) Create some orders:
-\`\`\`bash
+Create orders:
+
+```shellscript
 curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -d '{"productId":1,"quantity":5}'
@@ -176,43 +170,29 @@ curl -X POST http://localhost:3000/orders \
 curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -d '{"productId":2,"quantity":3}'
+```
 
-curl -X POST http://localhost:3000/orders \
-  -H "Content-Type: application/json" \
-  -d '{"productId":2,"quantity":1}'
-\`\`\`
+Top products:
 
-3) Get the top products report (example with limit=2):
-\`\`\`bash
+```shellscript
 curl "http://localhost:3000/reports/top-products?limit=2"
-\`\`\`
+```
 
-## Common errors
-- 400 Bad Request: invalid types or body format
-- 404 Not Found: product does not exist when creating an order
-- 409 Conflict: duplicate product name (if uniqueness is enforced)
-- 500 Internal Server Error: database or unexpected errors
+Common issues
 
-## Data model
-- Product
-  - `id`: number
-  - `name`: string
-  - `price`: number
-- Order
-  - `id`: number
-  - `productId`: number (references Product)
-  - `quantity`: number
+- 400: Invalid request body or types
+- 404: Product not found (when creating an order)
+- 409: Duplicate product name (if enforced)
+- 500: Database or unexpected error
 
-## Postman collection
-Quick start with Postman:
-- Open Postman → Import → Paste the URL below → Import
 
-Collection link:
-- https://develepors.postman.co/workspace/develepors-Workspace~0ff4a7a1-acbf-4377-8a53-f2a91fe2566e/collection/42617517-beba4d29-52aa-4d97-9ea5-8993668ad2bf?action=share&creator=42617517
+Data model
 
-## Next steps
-- Add request validation (e.g., name required, price/quantity positive)
-- Add pagination on list endpoints
-- Add migrations/seed scripts
-- Add tests (unit and e2e)
-- Add authentication if needed
+- Product: id (number), name (string), price (number)
+- Order: id (number), productId (number), quantity (number)
+
+
+Postman collection
+
+- Open Postman → Import → Paste this URL:
+- [https://develepors.postman.co/workspace/develepors-Workspace~0ff4a7a1-acbf-4377-8a53-f2a91fe2566e/collection/42617517-beba4d29-52aa-4d97-9ea5-8993668ad2bf?action=share&creator=42617517](https://develepors.postman.co/workspace/develepors-Workspace~0ff4a7a1-acbf-4377-8a53-f2a91fe2566e/collection/42617517-beba4d29-52aa-4d97-9ea5-8993668ad2bf?action=share&creator=42617517)
